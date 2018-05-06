@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">SmartToDo</string>
+    <string name="big_text">blablab\n
+        sdfdfdfs\n
+        dfsdfs\n
+        dfs\n
+        fds\n
+        dfs\n
+        fds\n
+        fdas\n
+        fds\n
+        fds\n
+        vdfs\n
+        fds\n
+        fds\n
+        dfs\n
+        fds\n
+        fdas\n
+        fds\n
+        fds\n
+        vdfs\n
+        fds\n
+        fds\n
+        dfs\n
+        fds\n
+        fdas\n
+        fds\n
+        fds\n
+        vdfs\n
+        fds\n
+        fds\n
+        dfs\n
+        fds\n
+        fdas\n
+        fds\n
+        fds\n
+        vdfs\n
+        fds\n
+        fds\n
+        fdsla\n</string>
+    <string name="todo_sampletext">Sample ToDo:Bla:ba</string>
+</resources>

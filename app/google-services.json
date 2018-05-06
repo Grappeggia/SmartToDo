@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "2838597534",
+    "firebase_url": "https://smarttodo-508a5.firebaseio.com",
+    "project_id": "smarttodo-508a5",
+    "storage_bucket": "smarttodo-508a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:2838597534:android:f6a865423801395b",
+        "android_client_info": {
+          "package_name": "com.coolapps.smarttodo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "2838597534-qs12h431emjphb64bgaqva57p7uat7rr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXTqxeAdhp01utANIvDSF2wk8qU-phG7Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
