@@ -20,14 +20,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         LoadTodosOnscreen();
-        //SampleAction();
     }
 
     void LoadTodosOnscreen(){
         //Call the main layout from App XML
         final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.mainLayout);
 
-        for (int i=0; i<5; i++){
+        for (int i=0; i<20; i++){
             //Create a view to inflate the main layout
             View tempView = getLayoutInflater().inflate(R.layout.layout_text, MainLayoutView,false);
 
@@ -37,14 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    void SampleAction(){
 
-        Context context = getApplicationContext();
-        CharSequence text = "Hello toast!";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
 
 }
