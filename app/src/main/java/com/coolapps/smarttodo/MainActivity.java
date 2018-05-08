@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         for (String todoItem : todoList){
             //Create a view to inflate the main layout
             View tempView = getLayoutInflater().inflate(R.layout.layout_text, MainLayoutView,false);
-            TextView tempText = (TextView) tempView.findViewById(R.id.text_item_id);
+            TextView tempText = (TextView) findViewById(R.id.text_item_id);
             tempText.setText(todoItem);
             //Add the view to the main layout
             MainLayoutView.addView(tempView);
