@@ -15,6 +15,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
@@ -58,25 +61,58 @@ import com.google.firebase.firestore.WriteBatch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoadDatabase();
+        LoadDatabase("tempUser");
         LoadTodosOnscreen();
     }
 
-    void LoadDatabase(){
+
+    void LoadDatabase(String userID){
+
+
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference tempDoc = db.collection("users").document(userID);
 
+        // Reads the todolist from the document belonging to the respective user
+        Task<DocumentSnapshot> tempTask = tempDoc.get();
+        tempTask.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        final Map<String,Object> todolistHashmap;
+                        todolistHashmap = document.getData();
+                        Log.d(TAG, "DocumentSnapshot data: " + todolistHashmap.get("todolist"));
+                    } else{
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
     }
 
