@@ -82,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoadDatabase("tempUser");
-        LoadTodosOnscreen();
+        LoadTodosOnScreen("tempUser");
+
     }
 
 
-    void LoadDatabase(String userID){
+    void LoadTodosOnScreen(String userID){
 
 
         // Access a Cloud Firestore instance from your Activity
@@ -102,9 +102,13 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        final Map<String,Object> todolistHashmap;
+                        Map<String,Object> todolistHashmap;
                         todolistHashmap = document.getData();
-                        Log.d(TAG, "DocumentSnapshot data: " + todolistHashmap.get("todolist"));
+                        ArrayList<String> todolistArray = (ArrayList<String>) todolistHashmap.get("todolist");
+                        Log.d(TAG, "DocumentSnapshot data: " + todolistArray);
+
+                        // Once all elements are loaded, call function to draw UI
+                        DrawLayoutFromTodolist(todolistArray);
                     } else{
                         Log.d(TAG, "No such document");
                     }
@@ -117,11 +121,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    void LoadTodosOnscreen(){
+    void DrawLayoutFromTodolist(ArrayList<String> todoList){
         //Call the main layout from App XML
         final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.mainLayout);
-
-        String todoList[] = LoadElements();
 
         //Draw all UI elements, extracted from a ToDo list
         for (String todoItem : todoList){
@@ -134,25 +136,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
-
-    public String[] LoadElements(){
-
-        String todoList[] = {   "1-make todo app",
-                "2-create todo list",
-                "2-create todo list",
-                "2-create todo list",
-                "2-create todo list",
-                "2-create todo list",
-                "2-create todo list",
-                "3-run todo app",
-                "3-run todo app",
-                "3-run todo app",
-                "3-run todo app",
-                "3-run todo app",
-                "3-run todo app"};
-
-        return todoList;
     }
 
 
