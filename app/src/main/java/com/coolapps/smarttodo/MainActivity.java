@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +22,8 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.view.KeyEvent;
+import android.view.inputmethod.InputMethodManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,19 +79,47 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
+    //Main array used for storing/adding the todo items
+    public ArrayList<String> todolistArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoadTodosOnScreen("tempUser");
+        loadTodosOnScreen("tempUser");
+
+        TextView createText = findViewById(R.id.createText);
+        createText.setVisibility(View.GONE);
 
     }
 
 
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event){
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+                createNewTodo();
+                return true;
+            case KeyEvent.KEYCODE_ESCAPE:
+                createNewTodo();
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                createNewTodo();
+                return true;
+            case KeyEvent.KEYCODE_NAVIGATE_OUT:
+                createNewTodo();
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
 
-    void LoadTodosOnScreen(String userID){
+        }
+
+    }
+
+
+    void loadTodosOnScreen(String userID){
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference tempDoc = db.collection("users").document(userID);
@@ -103,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Map<String,Object> todolistHashmap;
                         todolistHashmap = document.getData();
-                        ArrayList<String> todolistArray = (ArrayList<String>) todolistHashmap.get("todolist");
+                        todolistArray = (ArrayList<String>) todolistHashmap.get("todolist");
                         Log.d(TAG, "DocumentSnapshot data: " + todolistArray);
 
                         // Once all elements are loaded, call function to draw UI
-                        DrawLayoutFromTodolist(todolistArray);
+                        drawLayoutFromTodolist(todolistArray);
                     } else{
                         Log.d(TAG, "No such document");
                     }
@@ -120,9 +151,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    void DrawLayoutFromTodolist(ArrayList<String> todoList){
+    void drawLayoutFromTodolist(ArrayList<String> todoList){
         //Call the main layout from App XML
         final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.mainLayout);
+
+
 
         //Draw all UI elements, extracted from a ToDo list
         for (String todoItem : todoList){
@@ -137,7 +170,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void loadCreationScreen(View view) {
+
+        // Hide button to create todo, show text box to type contents
+        TextView createText = findViewById(R.id.createText);
+        createText.setVisibility(View.VISIBLE);
+        FloatingActionButton createButton = findViewById(R.id.createButton);
+        createButton.setVisibility(View.INVISIBLE);
 
 
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+    }
+
+    public void createNewTodo(){
+        // Show button to create todo, hide text box to type contents
+        TextView createText = findViewById(R.id.createText);
+        createText.setVisibility(View.GONE);
+        FloatingActionButton createButton = findViewById(R.id.createButton);
+        createButton.setVisibility(View.VISIBLE);
+
+        // Gets text for new todo, insert on top of current todo list
+        String textNewTodo = createText.getText().toString();
+        todolistArray.add(0,textNewTodo);
+
+        // Draw new todo
+        drawLayoutFromTodolist(todolistArray);
+
+
+        // ToDo - Update database with new entry
+
+        // Clean up Text for creating new todos, ready for next
+        createText.setText("");
+    }
 
 }
