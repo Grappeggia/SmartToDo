@@ -87,9 +87,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     void LoadTodosOnScreen(String userID){
-
-
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference tempDoc = db.collection("users").document(userID);
@@ -137,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
 }
