@@ -59,9 +59,13 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.AuthResult;
 
 
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,10 +83,11 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private FirebaseAuth mAuth;
 
     //Main array used for storing/adding the todo items
     public ArrayList<String> todolistArray;
-    public String userID = "tempUser3";
+    public String userID = "aaa";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Do authentication and get user token
+        authenticateAndGetUserID();
+
+
+        //while(userID == "") {
+        //    Log.d(TAG,"aaa");
+        //}
         loadTodosFromDatabase(userID);
 
         TextView createText = findViewById(R.id.createText);
@@ -97,6 +109,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        Log.d(TAG, "signInAnonymously:try");
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInAnonymously:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            //Update database to match logged user
+                            userID = user.getUid();
+                            saveTodosInDatabase();
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInAnonymously:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+    }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event){
@@ -122,7 +163,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void authenticateAndGetUserID(){
+        //Get the user unique token
+        //ToDo - Replace this by a real authentication process
+        mAuth = FirebaseAuth.getInstance();
 
+    }
     public void loadTodosFromDatabase(String userID){
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -227,15 +273,13 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton createButton = findViewById(R.id.createButton);
         createButton.setVisibility(View.VISIBLE);
 
-        // Gets text for new todo, insert on top of current todo list
+        // Gets text for new todo, insert at the beginning of current todo list
         String textNewTodo = createText.getText().toString();
         if(todolistArray == null ) todolistArray = new ArrayList<>();
-
         todolistArray.add(0,textNewTodo);
 
         // Draw new to do
         drawLayoutFromTodolist(todolistArray);
-
 
         // Write new entry to database
         saveTodosInDatabase();
@@ -245,7 +289,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteTodo(int elementArrayPosition){
-        Toast.makeText(MainActivity.this, "id" + elementArrayPosition , Toast.LENGTH_SHORT).show();
+        Log.d(TAG,"Removed element from position " + elementArrayPosition);
+
+        // Removes selected element from to do list
+        todolistArray.remove(elementArrayPosition);
+
+        // Draw updated to do list
+        drawLayoutFromTodolist(todolistArray);
+
+        // Updates database
+        saveTodosInDatabase();
+
     }
 
 }
