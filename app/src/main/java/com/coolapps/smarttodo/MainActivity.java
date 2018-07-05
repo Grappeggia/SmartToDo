@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Main array used for storing/adding the todo items
     public ArrayList<String> todolistArray;
+    public String userID = "tempUser3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadTodosFromDatabase("tempUser");
+        loadTodosFromDatabase(userID);
 
         TextView createText = findViewById(R.id.createText);
         createText.setVisibility(View.GONE);
@@ -139,11 +140,16 @@ public class MainActivity extends AppCompatActivity {
                         todolistHashmap = document.getData();
                         todolistArray = (ArrayList<String>) todolistHashmap.get("todolist");
                         Log.d(TAG, "DocumentSnapshot data: " + todolistArray);
-
-                        // Once all elements are loaded, call function to draw UI
-                        drawLayoutFromTodolist(todolistArray);
+                        if (todolistArray != null){
+                            // Once all elements are loaded, call function to draw UI
+                            drawLayoutFromTodolist(todolistArray);
+                        }
                     } else{
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "No such document, creating");
+                        // First time this user users, so needs to create document
+                        saveTodosInDatabase();
+
+
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
@@ -153,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveTodosInDatabase(String userID, String todoText){
+    public void saveTodosInDatabase(){
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference tempDoc = db.collection("users").document(userID);
@@ -206,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Gets text for new todo, insert on top of current todo list
         String textNewTodo = createText.getText().toString();
+        if(todolistArray == null ) todolistArray = new ArrayList<>();
+
         todolistArray.add(0,textNewTodo);
 
         // Draw new to do
@@ -213,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Write new entry to database
-        saveTodosInDatabase("tempUser", textNewTodo);
+        saveTodosInDatabase();
 
         // Clean up Text for creating new todos, ready for next
         createText.setText("");
