@@ -64,6 +64,7 @@ import com.google.firebase.firestore.WriteBatch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadTodosOnScreen("tempUser");
+        loadTodosFromDatabase("tempUser");
 
         TextView createText = findViewById(R.id.createText);
         createText.setVisibility(View.GONE);
@@ -98,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event){
+        /**
+         * Monitors the keyboard for actions that may indicate the user is done with their to do
+         * creation
+         */
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:
                 createNewTodo();
@@ -113,13 +118,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onKeyUp(keyCode, event);
-
         }
-
     }
 
 
-    void loadTodosOnScreen(String userID){
+    public void loadTodosFromDatabase(String userID){
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference tempDoc = db.collection("users").document(userID);
@@ -150,8 +153,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void saveTodosInDatabase(String userID, String todoText){
+        // Access a Cloud Firestore instance from your Activity
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference tempDoc = db.collection("users").document(userID);
 
-    void drawLayoutFromTodolist(ArrayList<String> todoList){
+        //Writes new To do inside Database, using global todolistArray
+        Map<String, Object> docData = new HashMap<>();
+        docData.put("todolist", todolistArray);
+        tempDoc.set(docData);
+    }
+
+    public void drawLayoutFromTodolist(ArrayList<String> todoList){
         //Call the main layout from App XML
         final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.todolistLinearView);
 
@@ -179,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton createButton = findViewById(R.id.createButton);
         createButton.setVisibility(View.INVISIBLE);
 
-
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 
@@ -196,11 +208,12 @@ public class MainActivity extends AppCompatActivity {
         String textNewTodo = createText.getText().toString();
         todolistArray.add(0,textNewTodo);
 
-        // Draw new todo
+        // Draw new to do
         drawLayoutFromTodolist(todolistArray);
 
 
-        // ToDo - Update database with new entry
+        // Write new entry to database
+        saveTodosInDatabase("tempUser", textNewTodo);
 
         // Clean up Text for creating new todos, ready for next
         createText.setText("");

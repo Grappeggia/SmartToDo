@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="todo_text_size">24sp</dimen>
-    <dimen name="todo_text_height">48sp</dimen>
+    <dimen name="todo_text_height">36sp</dimen>
     <dimen name="todo_text_divider_height">2dp</dimen>
 </resources>
