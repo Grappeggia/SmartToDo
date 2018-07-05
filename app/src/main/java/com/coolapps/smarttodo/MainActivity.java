@@ -171,18 +171,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void drawLayoutFromTodolist(ArrayList<String> todoList){
-        //Call the main layout from App XML
+        /**
+         * Call the main layout from App XML
+         */
         final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.todolistLinearView);
 
+        int elementArrayPosition = 0; //Position tracker to allow for element wise operations
 
         MainLayoutView.removeAllViews();
 
         //Draw all UI elements, extracted from a ToDo list
         for (String todoItem : todoList){
             //Create a view to inflate the main layout
-            View tempView = getLayoutInflater().inflate(R.layout.layout_text, MainLayoutView,false);
+            final View tempView = getLayoutInflater().inflate(R.layout.layout_text, MainLayoutView,false);
             TextView tempText = (TextView) tempView.findViewById(R.id.text_item_id);
             tempText.setText(todoItem);
+
+            //Set listener to capture swiping action
+            tempView.setId(elementArrayPosition);
+            elementArrayPosition++;
+            tempView.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this){
+                public void onSwipeRight(){
+                    deleteTodo(tempView.getId());
+
+                }
+                public void onSwipeLeft(){
+                    deleteTodo(tempView.getId());
+                }
+            });
+
             //Add the view to the main layout
             MainLayoutView.addView(tempView);
         }
@@ -225,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Clean up Text for creating new todos, ready for next
         createText.setText("");
+    }
+
+    public void deleteTodo(int elementArrayPosition){
+        Toast.makeText(MainActivity.this, "id" + elementArrayPosition , Toast.LENGTH_SHORT).show();
     }
 
 }
