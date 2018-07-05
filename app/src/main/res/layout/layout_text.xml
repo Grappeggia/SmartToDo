@@ -25,6 +25,8 @@
             android:layout_height="@dimen/todo_text_divider_height"
             android:background="?android:attr/listDivider"
             android:layout_marginTop="8dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="74dp" />
 

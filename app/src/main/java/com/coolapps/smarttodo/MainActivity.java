@@ -153,9 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
     void drawLayoutFromTodolist(ArrayList<String> todoList){
         //Call the main layout from App XML
-        final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.mainLayout);
+        final LinearLayout MainLayoutView = (LinearLayout) findViewById(R.id.todolistLinearView);
 
 
+        MainLayoutView.removeAllViews();
 
         //Draw all UI elements, extracted from a ToDo list
         for (String todoItem : todoList){
